@@ -3,7 +3,7 @@ package db
 import (
 	"github.com/Puppylove-IITK/puppy-love/Backend/config"
 
-	"gopkg.in/mgo.v2"
+	// "gopkg.in/mgo.v2"
 )
 
 type PuppyDb struct {
