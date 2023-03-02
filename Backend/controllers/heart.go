@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-
 	"gopkg.in/mgo.v2/bson"
 )
 
