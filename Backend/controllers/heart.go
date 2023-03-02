@@ -17,6 +17,30 @@ const (
 	DbName = "puppy"
 )
 
+type Database struct {
+	Client *mongo.Client
+}
+
+func (db *Database) Connect() error {
+	var err error
+
+	// Create a client instance
+	db.Client, err = mongo.NewClient(options.Client().ApplyURI("mongodb+srv://aleatoryfreak:hFyRFQUC724RXS1q@puppylove.woq42jd.mongodb.net/?retryWrites=true&w=majority"))
+	if err != nil {
+		return err
+	}
+
+	// Connect to MongoDB
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	err = db.Client.Connect(ctx)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func HeartGet(c *gin.Context) {
 	id, err := SessionId(c)
 	if err != nil || id != c.Param("you") {
@@ -41,48 +65,40 @@ func HeartGet(c *gin.Context) {
 
 	votes := new([]AnonymVote)
 
-	// Create a client instance
-
-	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://aleatoryfreak:hFyRFQUC724RXS1q@puppylove.woq42jd.mongodb.net/?retryWrites=true&w=majority"))
-	if err != nil {
+	// Create a database instance
+	var db Database
+	if err := db.Connect(); err != nil {
 		log.Fatal(err)
 	}
-
-	// Connect to MongoDB
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	err = client.Connect(ctx)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer client.Disconnect(ctx)
+	defer db.Client.Disconnect(context.TODO())
 
 	// Access the database
-	db := client.Database(DbName)
+	database := db.Client.Database(DbName)
 
 	// Fetch user
-	cursor, err := db.Collection("heart").
-		Find(context.TODO(), bson.M{"time": bson.M{"$gt": ltime, "$lte": ctime}})
+	// filter := bson.D{
+	// 	{"time", bson.D{
+	// 		{"$gt", ltime},
+	// 		{"$lte", ctime},
+	// 	}},
+	// }
+
+	cur, err := database.Collection("heart").Find(context.TODO(), bson.M{"time": bson.M{"$gt": ltime, "$lte": ctime}})
 	if err != nil {
 		c.AbortWithStatus(http.StatusNotFound)
 		log.Print(err)
 		return
 	}
+	defer cur.Close(context.Background())
 
-	votes := []AnonymVote{}
-
-	for cursor.Next(context.Background()) {
-		var vote AnonymVote
-		err := cursor.Decode(&vote)
-		if err != nil {
-			log.Print(err)
-			continue
-		}
-		votes = append(votes, vote)
+	if err := cur.All(context.Background(), &votes); err != nil {
+		c.AbortWithStatus(http.StatusNotFound)
+		log.Print(err)
+		return
 	}
 
 	c.JSON(http.StatusAccepted, bson.M{
-		"votes": *votes,
+		"votes": votes,
 		"time":  ctime,
 	})
 }

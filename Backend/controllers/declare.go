@@ -24,8 +24,6 @@ func DeclarePrepare(c *gin.Context) {
 		Id string `json:"_id" bson:"_id"`
 	}
 
-	var people []typeIds
-
 	cur, err := Db.GetCollection("user").Find(context.Background(), bson.M{"dirty": false})
 	if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)

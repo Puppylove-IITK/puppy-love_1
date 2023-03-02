@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/Puppylove-IITK/puppylove/db"
 	"github.com/Puppylove-IITK/puppylove/models"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
@@ -14,11 +13,11 @@ import (
 func GetStats(c *gin.Context) {
 	var users []models.User
 	var hearts []models.Heart
-	if err := db.Collection("user").Find(ctx, bson.M{"dirty": false}).All(&users); err != nil {
+	if err := Db.Collection("user").Find(ctx, bson.M{"dirty": false}).All(&users); err != nil {
 		c.String(http.StatusInternalServerError, "Could not get database info")
 		return
 	}
-	if err := db.Collection("heart").Find(ctx, nil).All(&hearts); err != nil {
+	if err := Db.Collection("heart").Find(ctx, nil).All(&hearts); err != nil {
 		c.String(http.StatusInternalServerError, "Could not get database info")
 		return
 	}

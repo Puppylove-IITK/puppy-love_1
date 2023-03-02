@@ -1,16 +1,19 @@
 package controllers
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"log"
 	"net/http"
-
+    "context"
+    "go.mongodb.org/mongo-driver/mongo"
+    "go.mongodb.org/mongo-driver/mongo/options"
 	"github.com/Puppylove-IITK/puppylove/config"
 	"github.com/Puppylove-IITK/puppylove/models"
-	"github.com/Puppylove-IITK/puppylove/db"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type LoginInfo struct {
@@ -47,10 +50,16 @@ func SessionLogin(c *gin.Context) {
 		return
 	}
 
+	// Fetch user
 	user := models.User{}
 
+	// Access the database
+	db := Client.Database(DbName)
+
 	// Fetch user
-	if err := Db.GetById("user", u.Username).One(&user); err != nil {
+	if err := db.Collection("user").
+		FindOne(context.Background(), bson.M{"username": u.Username}).
+		Decode(&user); err != nil {
 		SessionLogout(c)
 		c.String(http.StatusNotFound, "Invalid user")
 		log.Println("Invalid user: " + u.Username)
