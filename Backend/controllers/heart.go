@@ -69,9 +69,7 @@ func HeartGet(c *gin.Context) {
 		return
 	}
 
-	if *votes == nil {
-		*votes = []AnonymVote{}
-	}
+	votes := []AnonymVote{}
 
 	for cursor.Next(context.Background()) {
 		var vote AnonymVote
