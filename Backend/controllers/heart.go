@@ -1,20 +1,15 @@
 package controllers
 
 import (
-	"context"
 	"log"
 	"net/http"
 	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
-)
 
-type Database struct {
-	Client *mongo.Client
-}
+	"gopkg.in/mgo.v2/bson"
+)
 
 func HeartGet(c *gin.Context) {
 	id, err := SessionId(c)
@@ -42,29 +37,20 @@ func HeartGet(c *gin.Context) {
 	votes := new([]AnonymVote)
 
 	// Fetch user
-	// filter := bson.D{
-	// 	{"time", bson.D{
-	// 		{"$gt", ltime},
-	// 		{"$lte", ctime},
-	// 	}},
-	// }
-
-	cur, err := Db.GetCollection("heart").Find(context.TODO(), bson.M{"time": bson.M{"$gt": ltime, "$lte": ctime}})
-	if err != nil {
+	if err := Db.GetCollection("heart").
+		Find(bson.M{"time": bson.M{"$gt": ltime, "$lte": ctime}}).
+		All(votes); err != nil {
 		c.AbortWithStatus(http.StatusNotFound)
 		log.Print(err)
 		return
 	}
-	defer cur.Close(context.Background())
 
-	if err := cur.All(context.Background(), &votes); err != nil {
-		c.AbortWithStatus(http.StatusNotFound)
-		log.Print(err)
-		return
+	if *votes == nil {
+		*votes = []AnonymVote{}
 	}
 
 	c.JSON(http.StatusAccepted, bson.M{
-		"votes": votes,
+		"votes": *votes,
 		"time":  ctime,
 	})
 }

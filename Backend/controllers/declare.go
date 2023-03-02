@@ -1,14 +1,13 @@
 package controllers
 
 import (
-	"context"
 	"log"
 	"net/http"
 
-	"github.com/Puppylove-IITK/puppylove/models"
+	"github.com/pclubiitk/puppy-love/models"
+
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	"gopkg.in/mgo.v2/bson"
 )
 
 // @AUTH @Admin Create the entries in the declare table
@@ -24,29 +23,26 @@ func DeclarePrepare(c *gin.Context) {
 		Id string `json:"_id" bson:"_id"`
 	}
 
-	cur, err := Db.GetCollection("user").Find(context.Background(), bson.M{"dirty": false})
-	if err != nil {
+	var people []typeIds
+
+	if err := Db.GetCollection("user").
+		Find(bson.M{"dirty": false}).
+		All(&people); err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
 
-	for cur.Next(context.Background()) {
-		var pe typeIds
-		err := cur.Decode(&pe)
-		if err != nil {
-			log.Println(err)
-			continue
-		}
+	bulk := Db.GetCollection("declare").Bulk()
+	for _, pe := range people {
 		res := models.NewDeclareTable(pe.Id)
-		opt := options.Update().SetUpsert(true)
-		if _, err := Db.GetCollection("declare").UpdateOne(context.Background(), res.Selector, res.Change, opt); err != nil {
-			log.Println(err)
-		}
+		bulk.Upsert(res.Selector, res.Change)
 	}
+	r, err := bulk.Run()
 
-	if err := cur.Err(); err != nil {
+	if err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
 		log.Println(err)
+		return
 	}
-
-	c.Status(http.StatusOK)
+	c.JSON(http.StatusOK, r)
 }

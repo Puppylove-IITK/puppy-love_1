@@ -1,8 +1,8 @@
+package models
+
 import (
-	"context"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 )
 
 type (
@@ -20,18 +20,29 @@ type (
 )
 
 // Create table update object for token table
-func UpsertDeclareTable(d *Declare) *options.UpdateOptions {
-	return options.Update().SetUpsert(true)
+func UpsertDeclareTable(d *Declare) mgo.Change {
+	return mgo.Change{
+		Update: bson.M{"$set": bson.M{
+			"t0": d.Token0,
+			"t1": d.Token1,
+			"t2": d.Token2,
+			"t3": d.Token3,
+		}},
+		ReturnNew: true,
+	}
 }
 
-func NewDeclareTable(id string) *options.FindOneAndUpdateOptions {
-	selector := bson.M{"_id": id}
-	change := bson.M{"$setOnInsert": bson.M{
-		"_id": id,
-		"t0":  "",
-		"t1":  "",
-		"t2":  "",
-		"t3":  "",
-	}}
-	return options.FindOneAndUpdate().SetUpsert(true).SetReturnDocument(options.After)
+func NewDeclareTable(id string) PairUpsert {
+	_selector := bson.M{"_id": id}
+
+	return PairUpsert{
+		Selector: _selector,
+		Change: bson.M{"$setOnInsert": bson.M{
+			"_id": id,
+			"t0":  "",
+			"t1":  "",
+			"t2":  "",
+			"t3":  "",
+		}},
+	}
 }
