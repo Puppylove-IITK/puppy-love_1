@@ -61,9 +61,9 @@ func HeartGet(c *gin.Context) {
 	db := client.Database(DbName)
 
 	// Fetch user
-	if err := db.Collection("heart").
-		Find(context.TODO(), bson.M{"time": bson.M{"$gt": ltime, "$lte": ctime}}).
-		All(context.Background(), votes); err != nil {
+	cursor, err := db.Collection("heart").
+		Find(context.TODO(), bson.M{"time": bson.M{"$gt": ltime, "$lte": ctime}})
+	if err != nil {
 		c.AbortWithStatus(http.StatusNotFound)
 		log.Print(err)
 		return
@@ -71,6 +71,16 @@ func HeartGet(c *gin.Context) {
 
 	if *votes == nil {
 		*votes = []AnonymVote{}
+	}
+
+	for cursor.Next(context.Background()) {
+		var vote AnonymVote
+		err := cursor.Decode(&vote)
+		if err != nil {
+			log.Print(err)
+			continue
+		}
+		votes = append(votes, vote)
 	}
 
 	c.JSON(http.StatusAccepted, bson.M{

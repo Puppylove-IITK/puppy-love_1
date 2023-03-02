@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/Puppylove-IITK/puppylove/models"
-	"github.com/Puppylove-IITK/puppylove/db"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
