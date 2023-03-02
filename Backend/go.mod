@@ -5,7 +5,6 @@ go 1.20
 require (
 	github.com/gin-contrib/sessions v0.0.5
 	github.com/gin-gonic/gin v1.9.0
-	github.com/pclubiitk/puppy-love v0.0.0-20200211164640-7866cfedcc7a
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
 )
 
