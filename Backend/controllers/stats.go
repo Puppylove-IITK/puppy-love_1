@@ -4,20 +4,21 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/Puppylove-IITK/puppylove/db"
 	"github.com/Puppylove-IITK/puppylove/models"
 	"github.com/gin-gonic/gin"
-	"gopkg.in/mgo.v2/bson"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 // GetStats returns useful statistics
 func GetStats(c *gin.Context) {
 	var users []models.User
 	var hearts []models.Heart
-	if err := Db.GetCollection("user").Find(bson.M{"dirty": false}).All(&users); err != nil {
+	if err := db.Collection("user").Find(ctx, bson.M{"dirty": false}).All(&users); err != nil {
 		c.String(http.StatusInternalServerError, "Could not get database info")
 		return
 	}
-	if err := Db.GetCollection("heart").Find(nil).All(&hearts); err != nil {
+	if err := db.Collection("heart").Find(ctx, nil).All(&hearts); err != nil {
 		c.String(http.StatusInternalServerError, "Could not get database info")
 		return
 	}
@@ -27,25 +28,25 @@ func GetStats(c *gin.Context) {
 
 	for _, user := range users {
 		if user.Gender == "1" {
-			if strings.HasPrefix(user.Id, "21") {
+			if strings.HasPrefix(user.ID.Hex(), "21") {
 				y21males++
-			} else if strings.HasPrefix(user.Id, "20") {
+			} else if strings.HasPrefix(user.ID.Hex(), "20") {
 				y20males++
-			} else if strings.HasPrefix(user.Id, "19") {
+			} else if strings.HasPrefix(user.ID.Hex(), "19") {
 				y19males++
-			} else if strings.HasPrefix(user.Id, "18") {
+			} else if strings.HasPrefix(user.ID.Hex(), "18") {
 				y18males++
 			} else {
 				othermales++
 			}
 		} else {
-			if strings.HasPrefix(user.Id, "21") {
+			if strings.HasPrefix(user.ID.Hex(), "21") {
 				y21females++
-			} else if strings.HasPrefix(user.Id, "20") {
+			} else if strings.HasPrefix(user.ID.Hex(), "20") {
 				y20females++
-			} else if strings.HasPrefix(user.Id, "19") {
+			} else if strings.HasPrefix(user.ID.Hex(), "19") {
 				y19females++
-			} else if strings.HasPrefix(user.Id, "18") {
+			} else if strings.HasPrefix(user.ID.Hex(), "18") {
 				y18females++
 			} else {
 				otherfemales++
@@ -58,25 +59,25 @@ func GetStats(c *gin.Context) {
 
 	for _, heart := range hearts {
 		if heart.Gender == "1" {
-			if strings.HasPrefix(heart.Id, "21") {
+			if strings.HasPrefix(heart.UserID.Hex(), "21") {
 				y21maleHearts++
-			} else if strings.HasPrefix(heart.Id, "20") {
+			} else if strings.HasPrefix(heart.UserID.Hex(), "20") {
 				y20maleHearts++
-			} else if strings.HasPrefix(heart.Id, "19") {
+			} else if strings.HasPrefix(heart.UserID.Hex(), "19") {
 				y19maleHearts++
-			} else if strings.HasPrefix(heart.Id, "18") {
+			} else if strings.HasPrefix(heart.UserID.Hex(), "18") {
 				y18maleHearts++
 			} else {
 				othermaleHearts++
 			}
 		} else {
-			if strings.HasPrefix(heart.Id, "21") {
+			if strings.HasPrefix(heart.UserID.Hex(), "21") {
 				y21femaleHearts++
-			} else if strings.HasPrefix(heart.Id, "20") {
+			} else if strings.HasPrefix(heart.UserID.Hex(), "20") {
 				y20femaleHearts++
-			} else if strings.HasPrefix(heart.Id, "19") {
+			} else if strings.HasPrefix(heart.UserID.Hex(), "19") {
 				y19femaleHearts++
-			} else if strings.HasPrefix(heart.Id, "18") {
+			} else if strings.HasPrefix(heart.UserID.Hex(), "18") {
 				y18femaleHearts++
 			} else {
 				otherfemaleHearts++

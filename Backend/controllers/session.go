@@ -8,6 +8,7 @@ import (
 
 	"github.com/Puppylove-IITK/puppylove/config"
 	"github.com/Puppylove-IITK/puppylove/models"
+	"github.com/Puppylove-IITK/puppylove/db"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
