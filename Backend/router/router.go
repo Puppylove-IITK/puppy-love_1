@@ -3,6 +3,7 @@ package router
 import (
 	"net/http"
 
+	"github.com/Puppylove-IITK/puppylove/controllers"
 	"github.com/gin-gonic/gin"
 )
 
