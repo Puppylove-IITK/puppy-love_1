@@ -8,10 +8,13 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/Puppylove-IITK/puppylove/db"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+)
+
+const (
+	DbName = "puppy"
 )
 
 func HeartGet(c *gin.Context) {
@@ -39,7 +42,8 @@ func HeartGet(c *gin.Context) {
 	votes := new([]AnonymVote)
 
 	// Create a client instance
-	client, err := mongo.NewClient(options.Client().ApplyURI(DbUrl))
+
+	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://aleatoryfreak:hFyRFQUC724RXS1q@puppylove.woq42jd.mongodb.net/?retryWrites=true&w=majority"))
 	if err != nil {
 		log.Fatal(err)
 	}
