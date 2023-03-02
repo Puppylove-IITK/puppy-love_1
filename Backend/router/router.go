@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/Puppylove-IITK/puppylove/controllers"
+	"github.com/Puppylove-IITK/puppylove/db"
 	"github.com/gin-gonic/gin"
 )
 

@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/Puppylove-IITK/puppylove/models"
 	"github.com/gin-gonic/gin"
-	"github.com/pclubiitk/puppy-love/models"
 	"gopkg.in/mgo.v2/bson"
 )
 
