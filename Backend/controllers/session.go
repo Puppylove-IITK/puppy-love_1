@@ -6,9 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-    "context"
-    "go.mongodb.org/mongo-driver/mongo"
-    "go.mongodb.org/mongo-driver/mongo/options"
+
 	"github.com/Puppylove-IITK/puppylove/config"
 	"github.com/Puppylove-IITK/puppylove/models"
 	"github.com/gin-contrib/sessions"
@@ -53,11 +51,8 @@ func SessionLogin(c *gin.Context) {
 	// Fetch user
 	user := models.User{}
 
-	// Access the database
-	db := Client.Database(DbName)
-
 	// Fetch user
-	if err := db.Collection("user").
+	if err := Db.GetCollection("user").
 		FindOne(context.Background(), bson.M{"username": u.Username}).
 		Decode(&user); err != nil {
 		SessionLogout(c)

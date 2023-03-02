@@ -97,7 +97,7 @@ func UserFirst(c *gin.Context) {
 
 	// Edit information
 	filter := bson.M{"_id": objectID}
-	update := user.FirstLogin(info)
+	update := bson.M{"$set": bson.M{"firstLogin": true, "profile.name": info.Name, "profile.picture": info.Picture}}
 
 	result, err := Db.GetCollection("user").UpdateOne(context.Background(), filter, update)
 	if err != nil {
@@ -136,7 +136,7 @@ func UserMail(c *gin.Context) {
 
 	u := mailData{}
 
-	collection := client.Database("database_name").Collection("user")
+	collection := Db.GetCollection("user")
 
 	if err := collection.FindOne(context.Background(), bson.M{"_id": id}).Decode(&u); err != nil {
 		if err == mongo.ErrNoDocuments {
@@ -180,7 +180,7 @@ func MatchGet(c *gin.Context) {
 	user := new(typeUserGet)
 
 	// Fetch user
-	collection := client.Database(databaseName).Collection("user")
+	collection := Db.GetCollection("user")
 	filter := bson.M{"_id": id}
 	if err := collection.FindOne(context.Background(), filter).Decode(user); err != nil {
 		if err == mongo.ErrNoDocuments {
@@ -211,7 +211,7 @@ func UserGet(c *gin.Context) {
 	user := models.User{}
 
 	// Fetch user
-	if err := Db.Collection("user").FindOne(context.Background(), bson.M{"_id": id}).Decode(&user); err != nil {
+	if err := Db.GetCollection("user").FindOne(context.Background(), bson.M{"_id": id}).Decode(&user); err != nil {
 		c.AbortWithStatus(http.StatusNotFound)
 		log.Print(err)
 		return
@@ -256,11 +256,13 @@ func UserLoginGet(c *gin.Context) {
 	user := models.User{}
 
 	// Fetch user
-	err = collection.FindOne(context.Background(), bson.M{"_id": id}).Decode(&user)
-	if err != nil {
-		c.AbortWithStatus(http.StatusNotFound)
-		log.Print(err)
-		return
+	if err := Db.GetCollection("user").
+	FindOne(context.Background(), bson.M{"username": id}).
+	Decode(&user); err != nil {
+	SessionLogout(c)
+	c.String(http.StatusNotFound, "Invalid user")
+	log.Println("Invalid user: " + id)
+	return
 	}
 
 	resp := typeUserLoginGet{
@@ -279,6 +281,8 @@ func UserLoginGet(c *gin.Context) {
 	c.JSON(http.StatusAccepted, resp)
 }
 
+
+
 // After user submits all choices
 // ------------------------------
 func UserSubmitTrue(c *gin.Context) {
@@ -289,7 +293,7 @@ func UserSubmitTrue(c *gin.Context) {
 	}
 
 	user := models.User{}
-	if err := Db.Collection("user").FindOne(context.Background(), bson.M{"_id": id}).Decode(&user); err != nil {
+	if err := Db.GetCollection("user").FindOne(context.Background(), bson.M{"_id": id}).Decode(&user); err != nil {
 		c.JSON(http.StatusNotFound, "Invalid user")
 		log.Print(err)
 		return
@@ -317,7 +321,7 @@ func UserSubmitTrue(c *gin.Context) {
 	}
 
 	update := bson.M{"$set": bson.M{"submitted": true}}
-	if _, err := Db.Collection("user").UpdateOne(context.Background(), bson.M{"_id": id}, update); err != nil {
+	if _, err := Db.GetCollection("user").UpdateOne(context.Background(), bson.M{"_id": id}, update); err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		log.Print(err)
 		return
@@ -329,7 +333,7 @@ func declareStep(user models.User, info models.Declare) error {
 		return errors.New("Invalid session/userId")
 	}
 
-	collection := client.Database("your_db_name").Collection("declare")
+	collection := Db.GetCollection("declare")
 	filter := bson.M{"_id": user.Id}
 	update := bson.M{
 		"$set": bson.M{
@@ -369,7 +373,7 @@ func sendHearts(user models.User, info []models.GotHeart) error {
 	// Check that user isn't voting more than 4
 	// ========================================
 	userVotes := new([]models.Heart)
-	collection := client.Database("your_db_name").Collection("heart")
+	collection := Db.GetCollection("heart")
 	cur, err := collection.Find(context.Background(), bson.M{"roll": user.Id})
 	if err != nil {
 		return err
@@ -433,7 +437,7 @@ func UserUpdateData(c *gin.Context) {
 	filter := bson.M{"_id": id}
 	update := bson.M{"$set": bson.M{"data": info.Data}}
 
-	if err := Db.Collection("user").FindOneAndUpdate(c.Request.Context(), filter, update).Decode(&user); err != nil {
+	if err := Db.GetCollection("user").FindOneAndUpdate(c.Request.Context(), filter, update).Decode(&user); err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		log.Print(err)
 		return
@@ -467,7 +471,7 @@ func UserUpdateImage(c *gin.Context) {
 	filter := bson.M{"_id": id}
 	update := bson.M{"$set": bson.M{"image": info.Image}}
 
-	if err := Db.Collection("user").FindOneAndUpdate(c.Request.Context(), filter, update).Decode(&user); err != nil {
+	if err := Db.GetCollection("user").FindOneAndUpdate(c.Request.Context(), filter, update).Decode(&user); err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		log.Print(err)
 		return
@@ -500,7 +504,7 @@ func UserSavePass(c *gin.Context) {
 	filter := bson.M{"_id": id}
 	update := bson.M{"$set": bson.M{"savepass": info.Pass}}
 
-	if err := Db.Collection("user").FindOneAndUpdate(c.Request.Context(), filter, update).Decode(&user); err != nil {
+	if err := Db.GetCollection("user").FindOneAndUpdate(c.Request.Context(), filter, update).Decode(&user); err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		log.Print(err)
 		return

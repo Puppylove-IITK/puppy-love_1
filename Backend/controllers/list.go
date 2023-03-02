@@ -8,7 +8,6 @@ import (
 	"github.com/Puppylove-IITK/puppylove/models"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
-	"github.com/Puppylove-IITK/puppylove/db"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 

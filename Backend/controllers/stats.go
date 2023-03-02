@@ -1,25 +1,43 @@
 package controllers
 
 import (
+	"context"
 	"net/http"
 	"strings"
 
 	"github.com/Puppylove-IITK/puppylove/models"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 // GetStats returns useful statistics
 func GetStats(c *gin.Context) {
 	var users []models.User
 	var hearts []models.Heart
-	if err := Db.Collection("user").Find(ctx, bson.M{"dirty": false}).All(&users); err != nil {
+	ctx := context.Background()
+
+	userCollection := Db.GetCollection("user")
+	heartCollection := Db.GetCollection("heart")
+
+	if cur, err := userCollection.Find(ctx, bson.M{"dirty": false}); err != nil {
 		c.String(http.StatusInternalServerError, "Could not get database info")
 		return
+	} else {
+		if err := cur.All(ctx, &users); err != nil {
+			c.String(http.StatusInternalServerError, "Could not get database info")
+			return
+		}
 	}
-	if err := Db.Collection("heart").Find(ctx, nil).All(&hearts); err != nil {
+
+	if cur, err := heartCollection.Find(ctx, bson.M{}); err != nil {
 		c.String(http.StatusInternalServerError, "Could not get database info")
 		return
+	} else {
+		if err := cur.All(ctx, &hearts); err != nil {
+			c.String(http.StatusInternalServerError, "Could not get database info")
+			return
+		}
 	}
 
 	var y21males, y20males, y19males, y18males, othermales int

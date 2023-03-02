@@ -13,8 +13,8 @@ type PuppyDb struct {
 }
 
 func MongoConnect() (PuppyDb, error) {
-	clientOptions := options.Client().ApplyURI("mongodb+srv://aleatoryfreak:hFyRFQUC724RXS1q@puppylove.woq42jd.mongodb.net/?retryWrites=true&w=majority")
-	client, err := mongo.Connect(context.Background(), clientOptions)
+	ctx := context.TODO()
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb+srv://aleatoryfreak:hFyRFQUC724RXS1q@puppylove.woq42jd.mongodb.net/?retryWrites=true&w=majority"))
 	return PuppyDb{Client: client}, err
 }
 
