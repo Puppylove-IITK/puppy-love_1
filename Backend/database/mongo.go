@@ -1,7 +1,7 @@
 package db
 
 import (
-	"/Backend/config/config.go"
+	"github.com/Puppylove-IITK/puppy-love/tree/Main/Backend/config"
 
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"

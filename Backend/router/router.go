@@ -3,8 +3,6 @@ package router
 import (
 	"net/http"
 
-	"/Backend/controllers"
-
 	"github.com/gin-gonic/gin"
 )
 

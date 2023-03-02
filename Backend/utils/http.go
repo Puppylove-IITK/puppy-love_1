@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"os"
 
-	"/Backend/config"
+	"github.com/Puppylove-IITK/puppylove/config"
 )
 
 func SignupRequest(id string) error {
