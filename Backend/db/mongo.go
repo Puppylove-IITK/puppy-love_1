@@ -3,6 +3,7 @@ package db
 import (
 	"crypto/tls"
 	"net"
+	"time"
 
 	"gopkg.in/mgo.v2"
 )
@@ -12,23 +13,37 @@ type PuppyDb struct {
 }
 
 func MongoConnect() (PuppyDb, error) {
+	// MongoDB Atlas connection URI
+	uri := "mongodb+srv://aleatoryfreak:hFyRFQUC724RXS1q@puppylove.woq42jd.mongodb.net/?retryWrites=true&w=majority"
 
-	var mongoURI = "mongodb+srv://aleatoryfreak:hFyRFQUC724RXS1q@puppylove.woq42jd.mongodb.net/?retryWrites=true&w=majority"
+	dialInfo, err := mgo.ParseURL(uri)
+	if err != nil {
+		return PuppyDb{}, err
+	}
 
-	dialInfo, err := mgo.ParseURL(mongoURI)
-
-	//Below part is similar to above.
+	// Configure TLS
 	tlsConfig := &tls.Config{}
 	dialInfo.DialServer = func(addr *mgo.ServerAddr) (net.Conn, error) {
 		conn, err := tls.Dial("tcp", addr.String(), tlsConfig)
-		return conn, err
+		if err != nil {
+			return nil, err
+		}
+		return conn, nil
 	}
-	S, err := mgo.DialWithInfo(dialInfo)
-	return PuppyDb{S}, err
 
-	// ctx := context.TODO()
-	// client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb+srv://aleatoryfreak:hFyRFQUC724RXS1q@puppylove.woq42jd.mongodb.net/?retryWrites=true&w=majority"))
-	// return PuppyDb{Client: client}, err
+	// Set timeouts
+	dialInfo.Timeout = 10 * time.Second
+
+	S, err := mgo.DialWithInfo(dialInfo)
+	if err != nil {
+		return PuppyDb{}, err
+	}
+
+	// Set safe and mode
+	S.SetSafe(&mgo.Safe{})
+	S.SetMode(mgo.Monotonic, true)
+
+	return PuppyDb{S}, nil
 }
 
 func (db PuppyDb) GetById(table string, id string) *mgo.Query {
