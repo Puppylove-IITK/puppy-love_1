@@ -4,10 +4,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/Puppylove-IITK/puppy-love/Backend/config"
-	"github.com/Puppylove-IITK/puppy-love/Backend/database"
-	"github.com/Puppylove-IITK/puppy-love/Backend/router"
-	"github.com/Puppylove-IITK/puppy-love/Backend/utils"
+	"/Backend/config"
+	"/Backend/router"
+	"/Backend/utils"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"

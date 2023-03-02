@@ -10,8 +10,9 @@ var (
 	CfgAdminPass        = "passhash"
 	CfgAddr             = ":3000"
 	CfgMgoUser          = "aleatoryfreak"
+	CfgMgoPass          = "hFyRFQUC724RXS1q"
 	CfgMgoDb            = "puppy"
-	CfgMgoUrl           = "mongodb+srv://aleatoryfreak:@puppylove.woq42jd.mongodb.net/?retryWrites=true&w=majority"
+	CfgMgoUrl           = "mongodb+srv://aleatoryfreak:hFyRFQUC724RXS1q@puppylove.woq42jd.mongodb.net/?retryWrites=true&w=majority"
 	CfgRedisUrl         = "0.0.0.0:6379"
 	SignupUrl    string = "http://0.0.0.0:3001"
 )
