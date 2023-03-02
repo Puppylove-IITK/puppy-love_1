@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/Puppylove-IITK/puppylove/models"
 	"github.com/gin-gonic/gin"
-	"github.com/pclubiitk/puppy-love/models"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -86,7 +86,7 @@ func GetStats(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"users":             len(users),
-		"y21males":			 y21males,
+		"y21males":          y21males,
 		"y20males":          y20males,
 		"y19males":          y19males,
 		"y18males":          y18males,
