@@ -8,11 +8,11 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type puppydb struct {
+type PuppyDb struct {
 	Session *mongo.Client
 }
 
-func MongoConnect() (*puppydb, error) {
+func MongoConnect() (*PuppyDb, error) {
 	// Set your MongoDB Atlas connection string here.
 	connectionString := "mongodb+srv://aleatoryfreak:<password>@puppylove.woq42jd.mongodb.net/?retryWrites=true&w=majority"
 
@@ -33,14 +33,15 @@ func MongoConnect() (*puppydb, error) {
 
 	fmt.Println("Connected to MongoDB Atlas successfully!")
 
-	return &puppydb{Session: client}, nil
+	return &PuppyDb{Session: client}, nil
 }
 
-func (db *puppydb) GetCollection(database, collection string) *mongo.Collection {
-	return db.Session.Database(database).Collection(collection)
+func (db *PuppyDb) GetCollection(collection string) *mongo.Collection {
+	return db.Session.Database("puppy").Collection(collection)
 }
 
-func (db *puppydb) FindById(database, collection string, id interface{}) (*mongo.SingleResult, error) {
-	c := db.GetCollection(database, collection)
+func (db *PuppyDb) FindById(collection string, id interface{}) (*mongo.SingleResult, error) {
+	c := db.GetCollection(collection)
 	return c.FindOne(context.Background(), id), nil
 }
+
