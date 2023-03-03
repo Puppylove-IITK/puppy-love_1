@@ -16,7 +16,7 @@ func PuppyRoute(r *gin.Engine, db db.PuppyDb) {
 
 	controllers.Db = db
 
-	// r.GET("/stats", controllers.GetStats)
+	r.GET("/stats", controllers.GetStats)
 
 	// User administration
 	users := r.Group("/users")
