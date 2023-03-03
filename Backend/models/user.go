@@ -1,10 +1,13 @@
 package models
 
 import (
+	"context"
+
 	"github.com/Puppylove-IITK/puppylove/utils"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"gopkg.in/mgo.v2"
 )
 
 type User struct {
@@ -65,18 +68,19 @@ type TypeUserFirst struct {
 	Data     string `json:"data"`
 }
 
-func (u User) FirstLogin(info *TypeUserFirst) mgo.Change {
-	return mgo.Change{
-		Update: bson.M{"$set": bson.M{
+func (u User) FirstLogin(ctx context.Context, coll *mongo.Collection, info *TypeUserFirst) (*mongo.UpdateResult, error) {
+	update := bson.M{
+		"$set": primitive.M{
 			"authCode": "",
 			"passHash": info.PassHash,
 			"pubKey":   info.PubKey,
 			"privKey":  info.PrivKey,
 			"data":     info.Data,
 			"matches":  "",
-		}},
-		ReturnNew: true,
+		},
 	}
+
+	return coll.UpdateOne(ctx, bson.M{"_id": info.Id}, update)
 }
 
 // ----------------------------------------

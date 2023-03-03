@@ -77,7 +77,9 @@ func UserNew(c *gin.Context) {
 	}
 
 	// Create user
-	if _, err := userCollection.InsertOne(context.Background(), info); err != nil {
+	user := models.NewUser(info)
+
+	if _, err := userCollection.InsertOne(context.Background(), user); err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		log.Print(err)
 		return
@@ -155,15 +157,21 @@ func UserFirst(c *gin.Context) {
 	}
 
 	// Edit information
-	update := bson.M{"$set": user.FirstLogin(info)}
-	if _, err := userCollection.UpdateOne(context.Background(), filter, update); err != nil {
+	updateResult, err := user.FirstLogin(context.Background(), userCollection, info)
+	if err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+		log.Print(err)
+		return
+	}
+
+	if updateResult.ModifiedCount == 0 {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		log.Print(err)
 		return
 	}
 
 	// Remove user's auth token
-	update = bson.M{"$set": bson.M{"autoCode": ""}}
+	update := bson.M{"$set": bson.M{"autoCode": ""}}
 	if _, err := userCollection.UpdateOne(context.Background(), filter, update); err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		log.Print(err)
