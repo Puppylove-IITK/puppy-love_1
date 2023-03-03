@@ -40,8 +40,7 @@ func (db *PuppyDb) GetCollection(collection string) *mongo.Collection {
 	return db.Session.Database("puppy").Collection(collection)
 }
 
-func (db *PuppyDb) FindById(collection string, id interface{}) (*mongo.SingleResult, error) {
+func (db *PuppyDb) GetById(collection string, id interface{}) (*mongo.SingleResult, error) {
 	c := db.GetCollection(collection)
 	return c.FindOne(context.Background(), id), nil
 }
-

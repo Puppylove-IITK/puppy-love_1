@@ -2,6 +2,8 @@ github.com/Puppylove-IITK/puppy-love v0.0.0-20230303063747-6e21975c2b35 h1:vLQlk
 github.com/Puppylove-IITK/puppy-love v0.0.0-20230303063747-6e21975c2b35/go.mod h1:xmDx18oUlBXNkmEwLec2ukjy697mybQFCYuw8qItMVE=
 github.com/Puppylove-IITK/puppy-love v0.0.0-20230303065351-4b64a8e96bfe h1:t9477oonY6yjo0MtqAleJAn32MNHfjrb/h5fB74bKYo=
 github.com/Puppylove-IITK/puppy-love v0.0.0-20230303065351-4b64a8e96bfe/go.mod h1:xmDx18oUlBXNkmEwLec2ukjy697mybQFCYuw8qItMVE=
+github.com/Puppylove-IITK/puppy-love v0.0.0-20230303081612-5bb8360c69ad h1:BAHTd+3DoMw7kKwyME/GZ5i58FoRZKxOuBSdkUZd/t0=
+github.com/Puppylove-IITK/puppy-love v0.0.0-20230303081612-5bb8360c69ad/go.mod h1:xmDx18oUlBXNkmEwLec2ukjy697mybQFCYuw8qItMVE=
 github.com/bytedance/sonic v1.5.0/go.mod h1:ED5hyg4y6t3/9Ku1R6dU/4KyJ48DZ4jPhfY1O2AihPM=
 github.com/bytedance/sonic v1.8.0 h1:ea0Xadu+sHlu7x5O3gKhRpQ1IKiMrSiHttPF0ybECuA=
 github.com/bytedance/sonic v1.8.0/go.mod h1:i736AoUSYt75HyZLoJW9ERYxcy6eaN6h4BZXU064P/U=
