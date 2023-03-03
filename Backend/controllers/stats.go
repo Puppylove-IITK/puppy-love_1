@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Puppylove-IITK/puppylove/models"
 	"github.com/gin-gonic/gin"
-	"github.com/pclubiitk/puppy-love/models"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
