@@ -6,12 +6,7 @@ import (
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"gopkg.in/mgo.v2"
 )
-
-type PuppyDb struct {
-	S *mongo.Session
-}
 
 func MongoConnect() {
 	// Set your MongoDB Atlas connection string here.
@@ -36,13 +31,5 @@ func MongoConnect() {
 
 	fmt.Println("Connected to MongoDB Atlas successfully!")
 
-	return PuppyDb{client}, err
-}
-
-func (db PuppyDb) GetById(table string, id string) *mgo.Query {
-	return db.S.DB("puppy").C(table).FindId(id)
-}
-
-func (db PuppyDb) GetCollection(table string) *mgo.Collection {
-	return db.S.DB("puppy").C(table)
+	return
 }
