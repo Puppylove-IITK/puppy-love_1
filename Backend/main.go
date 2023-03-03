@@ -1,12 +1,31 @@
 package main
 
 import (
+	"context"
+	"fmt"
+	"log"
+
 	"github.com/Puppylove-IITK/puppylove/db"
 )
 
 func main() {
 	// config.CfgInit()
-	db.MongoConnect()
+	Db, err := db.MongoConnect()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer Db.Session.Disconnect(context.Background())
+
+	id := "1234"
+	result, err := db.FindById("puppy", "dogs", id)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(result)
+
+	collection := db.GetCollection("puppy", "dogs")
+	fmt.Println(collection)
+
 	// mongoDb, error := db.MongoConnect()
 	// if error != nil {
 	// 	fmt.Print("[Error] Could not connect to MongoDB")
