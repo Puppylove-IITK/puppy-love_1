@@ -10,7 +10,7 @@ require (
 )
 
 require (
-	github.com/Puppylove-IITK/puppy-love v0.0.0-20230303081612-5bb8360c69ad // indirect
+	github.com/Puppylove-IITK/puppy-love v0.0.0-20230303085200-6b679bd07665 // indirect
 	github.com/bytedance/sonic v1.8.0 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20221115062448-fe3a3abad311 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect

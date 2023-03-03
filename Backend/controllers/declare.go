@@ -10,7 +10,7 @@
 
 		"github.com/Puppylove-IITK/puppylove/models"
 		"github.com/gin-gonic/gin"
-		"gopkg.in/mgo.v2/bson"
+		"go.mongodb.org/mongo-driver/bson"
 	)
 	// @AUTH @Admin Create the entries in the declare table
 	// ----------------------------------------------------

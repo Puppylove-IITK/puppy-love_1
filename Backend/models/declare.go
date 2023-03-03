@@ -1,8 +1,8 @@
 package models
 
 import (
+	"go.mongodb.org/mongo-driver/bson"
 	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
 )
 
 type (

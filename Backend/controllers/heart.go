@@ -1,14 +1,14 @@
 package controllers
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
-
-	"gopkg.in/mgo.v2/bson"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 func HeartGet(c *gin.Context) {
@@ -34,23 +34,29 @@ func HeartGet(c *gin.Context) {
 		GenderOfSender string `json:"genderOfSender" bson:"gender"`
 	}
 
-	votes := new([]AnonymVote)
+	var votes []AnonymVote
 
-	// Fetch user
-	if err := Db.GetCollection("heart").
-		Find(bson.M{"time": bson.M{"$gt": ltime, "$lte": ctime}}).
-		All(votes); err != nil {
+	// Fetch votes
+	cursor, err := Db.GetCollection("heart").Find(context.Background(), bson.M{"time": bson.M{"$gt": ltime, "$lte": ctime}})
+	if err != nil {
+		c.AbortWithStatus(http.StatusNotFound)
+		log.Print(err)
+		return
+	}
+	defer cursor.Close(context.Background())
+
+	if err := cursor.All(context.Background(), &votes); err != nil {
 		c.AbortWithStatus(http.StatusNotFound)
 		log.Print(err)
 		return
 	}
 
-	if *votes == nil {
-		*votes = []AnonymVote{}
+	if len(votes) == 0 {
+		votes = []AnonymVote{}
 	}
 
 	c.JSON(http.StatusAccepted, bson.M{
-		"votes": *votes,
+		"votes": votes,
 		"time":  ctime,
 	})
 }

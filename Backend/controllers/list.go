@@ -1,12 +1,14 @@
 package controllers
 
 import (
+	"context"
 	"log"
 	"net/http"
 
 	"github.com/Puppylove-IITK/puppylove/models"
 	"github.com/gin-gonic/gin"
-	"gopkg.in/mgo.v2/bson"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 // @AUTH Get user's basic information
@@ -22,10 +24,25 @@ func ListAll(c *gin.Context) {
 	var results []typeListAll
 
 	// Fetch user
-	if err := Db.GetCollection("user").
-		Find(bson.M{}).
-		All(&results); err != nil {
+	cur, err := Db.GetCollection("user").Find(context.Background(), bson.M{})
+	if err != nil {
+		c.AbortWithStatus(http.StatusNotFound)
+		log.Print(err)
+		return
+	}
+	defer cur.Close(context.Background())
 
+	for cur.Next(context.Background()) {
+		var result typeListAll
+		err := cur.Decode(&result)
+		if err != nil {
+			log.Print(err)
+			continue
+		}
+		results = append(results, result)
+	}
+
+	if err := cur.Err(); err != nil {
 		c.AbortWithStatus(http.StatusNotFound)
 		log.Print(err)
 		return
@@ -35,18 +52,29 @@ func ListAll(c *gin.Context) {
 }
 
 func PubkeyList(c *gin.Context) {
-	var query [](struct {
-		Id string `json:"_id" bson:"_id"`
-		PK string `json:"pubKey" bson:"pubKey"`
-	})
+	var query []bson.M
 
-	if err := Db.GetCollection("user").
-		Find(bson.M{"dirty": false}).
-		All(&query); err != nil {
-
+	cursor, err := Db.GetCollection("user").
+		Find(context.Background(), bson.M{"dirty": false})
+	if err != nil {
 		c.AbortWithStatus(http.StatusNotFound)
 		log.Print(err)
 		return
+	}
+	defer cursor.Close(context.Background())
+
+	for cursor.Next(context.Background()) {
+		var user bson.M
+		if err := cursor.Decode(&user); err != nil {
+			c.AbortWithStatus(http.StatusInternalServerError)
+			log.Print(err)
+			return
+		}
+
+		query = append(query, bson.M{
+			"_id":    user["_id"],
+			"pubKey": user["pubKey"],
+		})
 	}
 
 	c.JSON(http.StatusAccepted, query)
@@ -60,8 +88,13 @@ func DeclareList(c *gin.Context) {
 	}
 
 	var resp models.Declare
-	if err := Db.GetById("declare", id).One(&resp); err != nil {
-		c.AbortWithStatus(http.StatusNotFound)
+	if err := Db.GetCollection("declare").FindOne(context.Background(), bson.M{"_id": id}).Decode(&resp); err != nil {
+		if err == mongo.ErrNoDocuments {
+			c.AbortWithStatus(http.StatusNotFound)
+			log.Print(err)
+			return
+		}
+		c.AbortWithStatus(http.StatusInternalServerError)
 		log.Print(err)
 		return
 	}
