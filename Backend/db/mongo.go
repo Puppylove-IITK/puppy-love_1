@@ -1,49 +1,42 @@
 package db
 
 import (
-	"crypto/tls"
-	"net"
-	"time"
+	"context"
+	"fmt"
 
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"gopkg.in/mgo.v2"
 )
 
 type PuppyDb struct {
-	S *mgo.Session
+	S *mongo.Session
 }
 
-func MongoConnect() (PuppyDb, error) {
-	// MongoDB Atlas connection URI
-	uri := "mongodb+srv://aleatoryfreak:hFyRFQUC724RXS1q@puppylove.woq42jd.mongodb.net/?retryWrites=true&w=majority"
+func MongoConnect() {
+	// Set your MongoDB Atlas connection string here.
+	connectionString := "mongodb+srv://aleatoryfreak:<password>@puppylove.woq42jd.mongodb.net/?retryWrites=true&w=majority"
 
-	dialInfo, err := mgo.ParseURL(uri)
+	// Set client options.
+	clientOptions := options.Client().ApplyURI(connectionString)
+
+	// Connect to MongoDB Atlas cluster.
+	client, err := mongo.Connect(context.Background(), clientOptions)
 	if err != nil {
-		return PuppyDb{}, err
+		fmt.Println("Error connecting to MongoDB Atlas:", err)
+		return
 	}
 
-	// Configure TLS
-	tlsConfig := &tls.Config{}
-	dialInfo.DialServer = func(addr *mgo.ServerAddr) (net.Conn, error) {
-		conn, err := tls.Dial("tcp", addr.String(), tlsConfig)
-		if err != nil {
-			return nil, err
-		}
-		return conn, nil
-	}
-
-	// Set timeouts
-	dialInfo.Timeout = 10 * time.Second
-
-	S, err := mgo.DialWithInfo(dialInfo)
+	// Check the connection.
+	err = client.Ping(context.Background(), nil)
 	if err != nil {
-		return PuppyDb{}, err
+		fmt.Println("Error pinging MongoDB Atlas:", err)
+		return
 	}
 
-	// Set safe and mode
-	S.SetSafe(&mgo.Safe{})
-	S.SetMode(mgo.Monotonic, true)
+	fmt.Println("Connected to MongoDB Atlas successfully!")
 
-	return PuppyDb{S}, nil
+	return PuppyDb{client}, err
 }
 
 func (db PuppyDb) GetById(table string, id string) *mgo.Query {
