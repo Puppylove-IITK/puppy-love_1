@@ -1,29 +1,26 @@
 package main
 
 import (
+	"context"
 	"fmt"
-	"os"
+	"log"
 
-	"github.com/Puppylove-IITK/puppy-love/Backend/config"
-	"github.com/Puppylove-IITK/puppy-love/Backend/database"
-	"github.com/Puppylove-IITK/puppy-love/Backend/router"
-	"github.com/Puppylove-IITK/puppy-love/Backend/utils"
-
+	"github.com/Puppylove-IITK/puppylove/config"
+	"github.com/Puppylove-IITK/puppylove/db"
+	"github.com/Puppylove-IITK/puppylove/router"
+	"github.com/Puppylove-IITK/puppylove/utils"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	config.CfgInit()
-
-	mongoDb, error := db.MongoConnect()
-	if error != nil {
-		fmt.Print("[Error] Could not connect to MongoDB")
-		fmt.Print("[Error] " + config.CfgMgoUrl)
-		fmt.Print(os.Environ())
-		os.Exit(1)
+	// config.CfgInit()
+	Db, err := db.MongoConnect()
+	if err != nil {
+		log.Fatal(err)
 	}
+	defer Db.Session.Disconnect(context.Background())
 
 	utils.Randinit()
 
@@ -33,7 +30,7 @@ func main() {
 	// iris.Config.Gzip = true
 	r := gin.Default()
 	r.Use(sessions.Sessions("mysession", store))
-	router.PuppyRoute(r, mongoDb)
+	router.PuppyRoute(r, *Db)
 	if err := r.Run(config.CfgAddr); err != nil {
 		fmt.Println("[Error] " + err.Error())
 	}

@@ -20,10 +20,15 @@
     "framer-motion": "^10.0.1",
     "next": "13.2.3",
     "react": "18.2.0",
+<<<<<<< HEAD
     "react-dom": "18.2.0"
   },
   "devDependencies": {
     "@types/node": "18.14.2",
     "@types/react": "18.0.28"
+=======
+    "react-dom": "18.2.0",
+    "sjcl": "^1.0.8"
+>>>>>>> 7b1297a9cdae18dcc415d44052e45b683413b832
   }
 }

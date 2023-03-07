@@ -3,9 +3,8 @@ package router
 import (
 	"net/http"
 
-	"github.com/Puppylove-IITK/puppy-love/Backend/controllers"
-	"github.com/Puppylove-IITK/puppy-love/Backend/database"
-
+	"github.com/Puppylove-IITK/puppylove/controllers"
+	"github.com/Puppylove-IITK/puppylove/db"
 	"github.com/gin-gonic/gin"
 )
 
@@ -59,8 +58,9 @@ func PuppyRoute(r *gin.Engine, db db.PuppyDb) {
 	admin := r.Group("/admin")
 	{
 		admin.GET("/declare/prepare", controllers.DeclarePrepare)
-		admin.GET("/user/drop", controllers.UserDelete)
+		admin.GET("/user/deleteallusers", controllers.DeleteAllUsers)
 		admin.POST("/user/new", controllers.UserNew)
+		admin.POST("/user/delete", controllers.UserDelete)
 	}
 
 }
