@@ -8,7 +8,7 @@ import * as React from 'react';
 const Layout = ({ children }) => {
     return (
         // <CssVarsProvider defaultMode="system">
-            <div className="content">
+        <div className="content">
             <Navbar />
             { children }
             <Footer />
